@@ -2,62 +2,135 @@ package com.example.convertidor
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
+
+    private var conversion: Int = 0
+    private var result : Double =0.0
+    private var value : String = ""
+    private lateinit var total : TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val selectedTemp = findViewById<Spinner>(R.id.temp_options)
-        val temp = findViewById<EditText>(R.id.cantidad)
         val button = findViewById<Button>(R.id.convertir)
-        val result = findViewById<TextView>(R.id.resultado)
+        val options = resources.getStringArray(R.array.convert_options)
+        val selectedTemp = findViewById<Spinner>(R.id.temp_options)
+        total = findViewById<TextView>(R.id.resultado)
+        val temp = findViewById<EditText>(R.id.cantidad)
+
 
         if (selectedTemp != null) {
             val adapter = ArrayAdapter(
                 this,
                 android.R.layout.simple_spinner_item,
-                resources.getStringArray(R.array.convert_options)
+                options
             )
             selectedTemp.adapter = adapter
+
+            selectedTemp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                     Toast.makeText(this@MainActivity,
+                         "Opción Seleccionada: " + position, Toast.LENGTH_SHORT)
+                         .show()
+
+                    conversion = position
+                }
+
+                override fun onNothingSelected(parent : AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+
+            }
+
+
         }
 
         button.setOnClickListener {
-            convert(temp.text.toString(), result)
+            value = temp.text.toString()
+            converter(conversion)
+
         }
     }
 
-    fun convert(celsiusString: String, result: TextView) {
-        // °C to °F Formula
-        if (celsiusString.isNotEmpty()) {
-            val celsius = celsiusString.toDouble()
-            val fahrenheit = (celsius * 9 / 5) + 32
-            result.text = "Resultado: $fahrenheit °F"
-        } else {
-            result.text = "Ingresa un valor válido en grados Celsius."
-        }
+        fun converter(_conversion: Int) {
+            when(_conversion){
+                0-> {
+                    // C a F = (C * 9/5) +32
+                    result = (value.toDouble() * 9/5 + 32)
 
-     fun convertCK(CelsiusK: String, result: TextView){
-         // °C to °K
-         if(CelsiusK.isNotEmpty()){
-             val celsiusK = CelsiusK.toDouble()
-             val kelvin = (celsiusK + 273.15)
-             result.text = "Resultado: $kelvin °K"
-         } else {
-            result.text = "Ingresa un valor válido en grados Kelvin."
-        }
-     }
-        //°F a °C: Celsius (°C) = (Fahrenheit (°F) - 32) × 5/9
-        //°F a °K: Kelvin (K) = (Fahrenheit (°F) - 32) × 5/9 + 273.15
-        //°K a °C: Celsius (°C) = Kelvin (K) - 273.15
-        //°K a °F: Fahrenheit (°F) = (Kelvin (K) - 273.15) × 9/5 + 32
+                    total.text = result.toString() + " °F"
+
+                }
+                1->{
+                    // C a K = (C + 273.15)
+                    result = (value.toDouble()) + 273.15
+                    total.text = result.toString() + " °K"
+                }
+                2-> {
+                    //°F a °C: Celsius (°C) = (Fahrenheit (°F) - 32) × 5/9
 
 
 
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
+                    result = (value.toDouble() - 32) * 5/9
+                    total.text = result.toString()+ " °C"
+
+                }
+                3-> {
+                    //°F a °K: Kelvin (K) = (Fahrenheit (°F) - 32) × 5/9 + 273.15
+                    result = (value.toDouble() -32) * 5/9 + 273.15
+                    total.text = result.toString()+ " °K"
+                }
+                4->{
+                    //°K a °C: Celsius (°C) = Kelvin (K) - 273.15
+                    result = (value.toDouble() -273.15)
+                    total.text = result.toString() + " °C"
+                }
+                5-> {
+                    //°K a °F: Fahrenheit (°F) = (Kelvin (K) - 273.15) × 9/5 + 32
+                    result = (value.toDouble() -273.15) * 9/5 +32
+                    total.text = result.toString() + " °F"
+                }
+
+            }
+
+
+         }
+
+
 }
+
